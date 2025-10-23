@@ -49,10 +49,6 @@ Secure Google OAuth 2.0 login + automatic visitor logging (device, browser, IP/l
   <em>Refined interactions and motion for a modern, professional feel.</em>
 </p>
 
-Note: Filenames contain spaces; paths are URL‑encoded so they render on GitHub.
-
----
-
 ## Tech at a glance 🛠️
 
 - Backend: Node.js + Express
