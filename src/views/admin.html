@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard - Visitor Tracker</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #333;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    
+    .header {
+      background: white;
+      padding: 25px;
+      border-radius: 15px;
+      margin-bottom: 30px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+    
+    h1 {
+      font-size: 2.5rem;
+      color: #667eea;
+      margin-bottom: 10px;
+    }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    
+    .stat-card {
+      background: white;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+      text-align: center;
+      transition: transform 0.3s ease;
+    }
+    
+    .stat-card:hover {
+      transform: translateY(-5px);
+    }
+    
+    .stat-icon {
+      font-size: 3rem;
+      margin-bottom: 10px;
+    }
+    
+    .stat-value {
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: #667eea;
+      margin-bottom: 5px;
+    }
+    
+    .stat-label {
+      font-size: 1rem;
+      color: #666;
+    }
+    
+    .visitors-section {
+      background: white;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+    
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    
+    h2 {
+      font-size: 1.8rem;
+      color: #667eea;
+    }
+    
+    .export-btn {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background 0.3s ease;
+    }
+    
+    .export-btn:hover {
+      background: #5568d3;
+    }
+    
+    .visitor-card {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      border-left: 4px solid #667eea;
+    }
+    
+    .visitor-card h3 {
+      color: #667eea;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    
+    .visitor-detail {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+    
+    .detail-item {
+      font-size: 0.9rem;
+      padding: 5px 0;
+    }
+    
+    .detail-label {
+      font-weight: 600;
+      color: #666;
+      display: inline-block;
+      min-width: 150px;
+    }
+    
+    .detail-value {
+      color: #333;
+      font-weight: 500;
+    }
+    
+    .loading {
+      text-align: center;
+      padding: 40px;
+      font-size: 1.2rem;
+      color: #667eea;
+    }
+    
+    .profile-pic {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      margin-right: 10px;
+      vertical-align: middle;
+    }
+    
+    .badge {
+      display: inline-block;
+      padding: 5px 12px;
+      background: rgba(0, 255, 136, 0.2);
+      border: 1px solid #00ff88;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      margin: 5px 5px 5px 0;
+      color: #00ff88;
+      font-weight: 600;
+    }
+    
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 1.8rem;
+      }
+      
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .visitor-detail {
+        grid-template-columns: 1fr;
+      }
+      
+      .detail-label {
+        min-width: auto;
+        display: block;
+        margin-bottom: 3px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🔐 Admin Dashboard</h1>
+    <p>Comprehensive Visitor Tracking & Analytics - All Data Displayed</p>
+  </div>
+  
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon">👥</div>
+      <div class="stat-value" id="totalVisitors">0</div>
+      <div class="stat-label">Total Visitors</div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-icon">🌍</div>
+      <div class="stat-value" id="uniqueCountries">0</div>
+      <div class="stat-label">Countries</div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-icon">💻</div>
+      <div class="stat-value" id="topBrowser">-</div>
+      <div class="stat-label">Top Browser</div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-icon">📱</div>
+      <div class="stat-value" id="topDevice">-</div>
+      <div class="stat-label">Top Device</div>
+    </div>
+  </div>
+  
+  <div class="visitors-section">
+    <div class="section-header">
+      <h2>📋 All Visitors (Complete Details)</h2>
+      <button class="export-btn" onclick="exportToCSV()">📥 Export CSV</button>
+    </div>
+    
+    <div id="loading" class="loading">
+      🔄 Loading visitor data...
+    </div>
+    
+    <div id="visitorsList" style="display: none;"></div>
+  </div>
+  
+  <script>
+    let allVisitors = [];
+    
+    // Fetch all visitor data
+    fetch('/api/admin/visitors')
+      .then(res => res.json())
+      .then(data => {
+        allVisitors = data;
+        displayStats(data);
+        displayVisitors(data);
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('visitorsList').style.display = 'block';
+      })
+      .catch(err => {
+        console.error('Error:', err);
+        document.getElementById('loading').innerHTML = '❌ Error loading data';
+      });
+    
+    function displayStats(visitors) {
+      // Total visitors
+      document.getElementById('totalVisitors').textContent = visitors.length;
+      
+      // Unique countries
+      const countries = new Set(visitors.map(v => v.location?.country).filter(Boolean));
+      document.getElementById('uniqueCountries').textContent = countries.size;
+      
+      // Top browser
+      const browsers = {};
+      visitors.forEach(v => {
+        const browser = v.device?.browser?.name || 'Unknown';
+        browsers[browser] = (browsers[browser] || 0) + 1;
+      });
+      const topBrowser = Object.keys(browsers).sort((a, b) => browsers[b] - browsers[a])[0] || '-';
+      document.getElementById('topBrowser').textContent = topBrowser;
+      
+      // Top device
+      const devices = {};
+      visitors.forEach(v => {
+        const device = v.device?.device?.type || 'Desktop';
+        devices[device] = (devices[device] || 0) + 1;
+      });
+      const topDevice = Object.keys(devices).sort((a, b) => devices[b] - devices[a])[0] || '-';
+      document.getElementById('topDevice').textContent = topDevice.charAt(0).toUpperCase() + topDevice.slice(1);
+    }
+    
+    function displayVisitors(visitors) {
+      const container = document.getElementById('visitorsList');
+      
+      visitors.reverse().forEach((visitor, index) => {
+        const card = document.createElement('div');
+        card.className = 'visitor-card';
+        
+        const user = visitor.user || {};
+        const device = visitor.device || {};
+        const location = visitor.location || {};
+        
+        // Extract email and photo properly from arrays
+        const email = user.emails?.[0]?.value || user.email || 'N/A';
+        const photo = user.photos?.[0]?.value || user.photo || null;
+        const displayName = user.displayName || user.name || email || 'Anonymous User';
+        
+        // Build badges for gender and birthday
+        let genderBadge = '';
+        if (user.gender) {
+          const genderIcon = user.gender === 'male' ? '👨' : user.gender === 'female' ? '👩' : '🧑';
+          genderBadge = `<span class="badge" style="background: rgba(52, 152, 219, 0.2); border-color: #3498db; color: #3498db;">${genderIcon} ${user.gender.toUpperCase()}</span>`;
+        }
+        
+        let birthdayBadge = '';
+        if (user.birthday) {
+          birthdayBadge = `<span class="badge" style="background: rgba(231, 76, 60, 0.2); border-color: #e74c3c; color: #e74c3c;">🎂 Birthday: ${user.birthday}</span>`;
+        }
+        
+        card.innerHTML = `
+          <h3>
+            ${photo ? `<img src="${photo}" class="profile-pic" alt="Profile">` : '👤'}
+            <span>${displayName}</span>
+            <small style="color: #999;">#${visitors.length - index}</small>
+          </h3>
+          
+          <div style="margin: 15px 0;">
+            ${genderBadge}
+            ${birthdayBadge}
+          </div>
+          
+          <div class="visitor-detail">
+            <div class="detail-item">
+              <span class="detail-label">⏰ Visit Time:</span>
+              <span class="detail-value">${visitor.time || 'N/A'}</span>
+            </div>
+            
+            <div class="detail-item">
+              <span class="detail-label">📧 Email:</span>
+              <span class="detail-value">${email}</span>
+            </div>
+            
+            <div class="detail-item">
+              <span class="detail-label">👤 Display Name:</span>
+              <span class="detail-value">${user.displayName || 'N/A'}</span>
+            </div>
+            
+            <div class="detail-item">
+              <span class="detail-label">👤 First Name:</span>
+              <span class="detail-value">${user.name?.givenName || user.firstName || 'N/A'}</span>
+            </div>
+            
+            <div class="detail-item">
+              <span class="detail-label">👤 Last Name:</span>
+              <span class="detail-value">${user.name?.familyName || user.lastName || 'N/A'}</span>
+            </div>
+            
+            <div class="detail-item">
+              <span class="detail-label">🆔 User ID:</span>
+              <span class="detail-value">${user.id || 'N/A'}</span>
+            </div>
+            
+            <div class="detail-item">
+              <span class="detail-label">🌐 IP Address:</span>
+              <span class="detail-value">${visitor.ip || 'N/A'}</span>
+            </div>
+            
+            <div class="detail-item">
+              <span class="detail-label">🌍 Country:</span>
+              <span class="detail-value">${location.country || 'Unknown'}</span>
+            </div>
+            
+            <div class="detail-item">
+              <span class="detail-label">🏙️ City:</span>
+              <span class="detail-value">${location.city || 'Unknown'}</span>
+            </div>
+            
+            <div class="detail-item">
+              <span class="detail-label">📍 Region:</span>
+              <span class="detail-value">${location.regionName || 'Unknown'}</span>
+            </div>
+            
+            <div class="detail-item">
+              <span class="detail-label">🗺️ Coordinates:</span>
+              <span class="detail-value">${location.lat && location.lon ? `Lat: ${location.lat}, Lon: ${location.lon}` : 'N/A'}</span>
+            </div>
+            
+            <div class="detail-item">
+              <span class="detail-label">💻 Browser:</span>
+              <span class="detail-value">${device.browser?.name || 'Unknown'} ${device.browser?.version || ''}</span>
+            </div>
+            
+            <div class="detail-item">
+              <span class="detail-label">🔢 Browser Major Version:</span>
+              <span class="detail-value">${device.browser?.major || 'N/A'}</span>
+            </div>
+            
+            <div class="detail-item">
+              <span class="detail-label">🖥️ Operating System:</span>
+              <span class="detail-value">${device.os?.name || 'Unknown'} ${device.os?.version || ''}</span>
+            </div>
+            
+            <div class="detail-item">
+              <span class="detail-label">📱 Device Type:</span>
+              <span class="detail-value">${device.device?.type || 'Desktop'}</span>
+            </div>
+            
+            <div class="detail-item">
+              <span class="detail-label">🔧 Device Vendor:</span>
+              <span class="detail-value">${device.device?.vendor || 'Unknown'}</span>
+            </div>
+            
+            <div class="detail-item">
+              <span class="detail-label">📲 Device Model:</span>
+              <span class="detail-value">${device.device?.model || 'Unknown'}</span>
+            </div>
+            
+            <div class="detail-item">
+              <span class="detail-label">⚙️ CPU Architecture:</span>
+              <span class="detail-value">${device.cpu?.architecture || 'Unknown'}</span>
+            </div>
+            
+            <div class="detail-item">
+              <span class="detail-label">🔍 Browser Engine:</span>
+              <span class="detail-value">${device.engine?.name || 'Unknown'} ${device.engine?.version || ''}</span>
+            </div>
+            
+            <div class="detail-item">
+              <span class="detail-label">🔗 OAuth Provider:</span>
+              <span class="detail-value">${user.provider || 'N/A'}</span>
+            </div>
+            
+            <div class="detail-item" style="grid-column: 1 / -1;">
+              <span class="detail-label">🌐 User Agent:</span>
+              <span class="detail-value" style="font-size: 0.75rem; word-break: break-all; display: block; margin-top: 5px;">${device.ua || 'N/A'}</span>
+            </div>
+          </div>
+        `;
+        
+        container.appendChild(card);
+      });
+    }
+    
+    function exportToCSV() {
+      const headers = ['Time', 'Name', 'Email', 'Gender', 'Birthday', 'User ID', 'IP', 'Country', 'City', 'Region', 'Lat', 'Lon', 'Browser', 'Browser Version', 'OS', 'Device Type', 'Device Vendor', 'Device Model', 'CPU', 'Engine', 'OAuth Provider', 'Photo URL'];
+      const rows = allVisitors.map(v => {
+        const email = v.user?.emails?.[0]?.value || v.user?.email || '';
+        const photo = v.user?.photos?.[0]?.value || v.user?.photo || '';
+        return [
+          v.time || '',
+          v.user?.displayName || v.user?.name || email || '',
+          email,
+          v.user?.gender || '',
+          v.user?.birthday || '',
+          v.user?.id || '',
+          v.ip || '',
+          v.location?.country || '',
+          v.location?.city || '',
+          v.location?.regionName || '',
+          v.location?.lat || '',
+          v.location?.lon || '',
+          v.device?.browser?.name || '',
+          v.device?.browser?.version || '',
+          (v.device?.os?.name || '') + ' ' + (v.device?.os?.version || ''),
+          v.device?.device?.type || 'Desktop',
+          v.device?.device?.vendor || '',
+          v.device?.device?.model || '',
+          v.device?.cpu?.architecture || '',
+          v.device?.engine?.name || '',
+          v.user?.provider || '',
+          photo
+        ];
+      });
+      
+      let csvContent = headers.join(',') + '\n';
+      rows.forEach(row => {
+        csvContent += row.map(cell => `"${cell}"`).join(',') + '\n';
+      });
+      
+      const blob = new Blob([csvContent], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `visitors_complete_data_${new Date().toISOString().split('T')[0]}.csv`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+    }
+  </script>
+</body>
+</html>

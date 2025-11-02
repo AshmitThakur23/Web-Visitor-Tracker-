@@ -11,23 +11,16 @@ passport.use(
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       callbackURL: `${process.env.BASE_URL}/auth/google/callback`,
-      scope: [
-        'profile',
-        'email',
-        'https://www.googleapis.com/auth/user.birthday.read',
-        'https://www.googleapis.com/auth/user.gender.read'
-      ],
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
         // Clean user data
         const user = {
           id: profile.id,
-          name: profile.displayName,
-          firstName: profile.name?.givenName || "",
-          lastName: profile.name?.familyName || "",
-          email: profile.emails?.[0]?.value || "",
-          photo: profile.photos?.[0]?.value || "",
+          displayName: profile.displayName,
+          name: profile.name,
+          emails: profile.emails,
+          photos: profile.photos,
           provider: profile.provider,
         };
 

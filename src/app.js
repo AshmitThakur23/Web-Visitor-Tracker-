@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
 import passport from "passport";
+import fs from "fs";
 import "./auth.js";
 import { logVisit } from "./logger.js";
 
@@ -57,6 +58,33 @@ app.get(
     res.redirect("/success");
   }
 );
+
+// Admin Dashboard Route (Protected)
+app.get("/admin", (req, res) => {
+  res.sendFile(path.join(__dirname, "views", "admin.html"));
+});
+
+// API endpoint to get all visitors data for admin
+app.get("/api/admin/visitors", (req, res) => {
+  try {
+    const logsFile = path.join(__dirname, "../logs/visits.jsonl");
+    
+    if (!fs.existsSync(logsFile)) {
+      return res.json([]);
+    }
+    
+    const data = fs.readFileSync(logsFile, "utf-8");
+    const visitors = data
+      .split("\n")
+      .filter(line => line.trim())
+      .map(line => JSON.parse(line));
+    
+    res.json(visitors);
+  } catch (err) {
+    console.error("Error reading logs:", err);
+    res.status(500).json({ error: "Failed to read logs" });
+  }
+});
 
 // -------- Auto-select PORT --------
 function startServer(port) {
