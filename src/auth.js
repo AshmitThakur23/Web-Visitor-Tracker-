@@ -11,6 +11,12 @@ passport.use(
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       callbackURL: `${process.env.BASE_URL}/auth/google/callback`,
+      scope: [
+        'profile',
+        'email',
+        'https://www.googleapis.com/auth/user.birthday.read',
+        'https://www.googleapis.com/auth/user.gender.read'
+      ],
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
@@ -25,7 +31,7 @@ passport.use(
           provider: profile.provider,
         };
 
-        // ✅ Extra: fetch birthday & gender from Google People API
+        // Fetch birthday & gender from Google People API
         try {
           const peopleRes = await fetch(
             "https://people.googleapis.com/v1/people/me?personFields=genders,birthdays",

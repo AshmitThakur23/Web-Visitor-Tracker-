@@ -28,13 +28,20 @@ export async function logVisit(req, userData) {
 
     // Location info
     let location = {};
-    try {
-      const geoRes = await fetch(
-        `http://ip-api.com/json/${ip}?fields=status,country,regionName,city,lat,lon,query`
-      );
-      location = await geoRes.json();
-    } catch {
-      location = { error: "geo lookup failed" };
+    // Skip geolocation for localhost/private IPs
+    const isLocalhost = ip === "::1" || ip === "127.0.0.1" || ip === "localhost" || ip.startsWith("192.168.") || ip.startsWith("10.") || ip.startsWith("172.");
+    
+    if (!isLocalhost) {
+      try {
+        const geoRes = await fetch(
+          `http://ip-api.com/json/${ip}?fields=status,country,regionName,city,lat,lon,query`
+        );
+        location = await geoRes.json();
+      } catch {
+        location = { error: "geo lookup failed" };
+      }
+    } else {
+      location = { status: "localhost", message: "Geolocation not available for local IPs" };
     }
 
     // Final log entry

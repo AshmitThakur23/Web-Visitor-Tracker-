@@ -24,15 +24,6 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-// ✅ Log visits ONLY once per request (not multiple times)
-app.use(async (req, res, next) => {
-  if (!req._visitLogged) {
-    await logVisit(req, req.user || null);
-    req._visitLogged = true;
-  }
-  next();
-});
-
 // Routes
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "views", "index.html"));
@@ -59,7 +50,12 @@ app.get(
 app.get(
   "/auth/google/callback",
   passport.authenticate("google", { failureRedirect: "/" }),
-  (req, res) => res.redirect("/success")
+  async (req, res) => {
+    // ✅ Log only once when login is successful
+    await logVisit(req, req.user);
+
+    res.redirect("/success");
+  }
 );
 
 // -------- Auto-select PORT --------
