@@ -86,22 +86,27 @@ app.get("/api/admin/visitors", (req, res) => {
   }
 });
 
-// -------- Auto-select PORT --------
-function startServer(port) {
-  const server = app.listen(port, () =>
-    console.log(`🚀 Server running at http://localhost:${port}`)
-  );
+// -------- Auto-select PORT (only for local development) --------
+if (process.env.NODE_ENV !== 'production') {
+  function startServer(port) {
+    const server = app.listen(port, () =>
+      console.log(`🚀 Server running at http://localhost:${port}`)
+    );
 
-  server.on("error", (err) => {
-    if (err.code === "EADDRINUSE") {
-      console.log(`⚠️ Port ${port} in use, trying next...`);
-      startServer(port + 1); // try next port
-    } else {
-      console.error("Server error:", err);
-    }
-  });
+    server.on("error", (err) => {
+      if (err.code === "EADDRINUSE") {
+        console.log(`⚠️ Port ${port} in use, trying next...`);
+        startServer(port + 1); // try next port
+      } else {
+        console.error("Server error:", err);
+      }
+    });
+  }
+
+  // Start with env.PORT or fallback
+  const startPort = parseInt(process.env.PORT, 10) || 3000;
+  startServer(startPort);
 }
 
-// Start with env.PORT or fallback
-const startPort = parseInt(process.env.PORT, 10) || 3000;
-startServer(startPort);
+// Export for Vercel
+export default app;
