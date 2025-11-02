@@ -54,10 +54,11 @@ export async function logVisit(req, userData) {
     };
 
     fs.appendFileSync(logsFile, JSON.stringify(logData) + "\n", "utf8");
+    console.log("✅ Logged:", logData);
     
-    // Show full details in terminal (including nested objects)
-    console.log("✅ Logged:", JSON.stringify(logData, null, 2));
+    return logData; // Return for potential use
   } catch (err) {
     console.error("Log error:", err);
+    return null;
   }
 }

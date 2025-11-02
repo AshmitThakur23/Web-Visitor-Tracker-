@@ -1,6 +1,0 @@
-node_modules/
-.env
-logs/visits.jsonl
-*.log
-.DS_Store
-.vercel
